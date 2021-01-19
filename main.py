@@ -4,6 +4,7 @@ from tkinter import filedialog
 import numpy as np
 import time
 import pygame
+import math
 
 from button import button
 from img_processing import img_processing
