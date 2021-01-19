@@ -37,7 +37,6 @@ comare_compare = [
 def img_processing(path):
     img = cv2.imread(path, 0)
     # processing image
-    img = cv2.GaussianBlur(img, (7, 7), 0)
     img = cv2.adaptiveThreshold(
         img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
     edges = cv2.Canny(img, 5, 100)
@@ -49,6 +48,9 @@ def img_processing(path):
     for i in range(len(lines)):
         for x1, y1, x2, y2 in lines[i]:
             cv2.line(img, (x1, y1), (x2, y2), (255, 255, 255), 4)
+
+    # experiment with blur
+    img = cv2.GaussianBlur(img, (9, 9), 0)
 
     # run OCR for every square in sudoku:
     img_height, img_weight = img.shape

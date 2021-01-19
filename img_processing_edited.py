@@ -49,8 +49,7 @@ def img_processing(path):
         for x1, y1, x2, y2 in lines[i]:
             cv2.line(img, (x1, y1), (x2, y2), (255, 255, 255), 4)
 
-    img = cv2.blur(9, 9)
-    img = cv2.GaussianBlur(img, (3, 3), 0)
+    img = cv2.GaussianBlur(img, (9, 9), 0)
 
     # run OCR for every square in sudoku:
     img_height, img_weight = img.shape
@@ -69,6 +68,7 @@ def img_processing(path):
     cv2.imwrite('test.png', img)
     cv2.imshow('aa', img)
     cv2.waitKey(0)
+
     if board != comare_compare:
         print(board)
         return board
