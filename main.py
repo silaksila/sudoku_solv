@@ -359,6 +359,7 @@ def change_board():
 
         # reset everything for new board
         num = levels[board_num]
+
         solve()
         useless_variable = 1
         solved = False

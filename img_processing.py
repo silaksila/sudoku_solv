@@ -7,29 +7,7 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 
 custom_tesseract_config = r'--psm 10 --oem 3 -c tessedit_char_whitelist=0123456789'
 
-board = [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0]
-]
-
-comare_compare = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0]
-]
+board = np.zeros((9, 9), dtype=int).tolist()
 
 # this function process image nad return board
 
@@ -37,19 +15,19 @@ comare_compare = [
 def img_processing(path):
     img = cv2.imread(path, 0)
     # processing image
+    img = cv2.resize(img, (900, 900))
     img = cv2.adaptiveThreshold(
-        img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    edges = cv2.Canny(img, 5, 100)
+        img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 2)
+    edges = cv2.Canny(img, 100, 400)
 
     # find lines in sudoku
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 10,
-                            minLineLength=30, maxLineGap=10)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 100,
+                            minLineLength=100, maxLineGap=30)
     # remove lines from sudoku
     for i in range(len(lines)):
         for x1, y1, x2, y2 in lines[i]:
-            cv2.line(img, (x1, y1), (x2, y2), (255, 255, 255), 4)
+            cv2.line(img, (x1, y1), (x2, y2), (255, 255, 255), 12)
 
-    # experiment with blur
     img = cv2.GaussianBlur(img, (9, 9), 0)
 
     # run OCR for every square in sudoku:
@@ -65,10 +43,6 @@ def img_processing(path):
             num = re.findall('\d+', num)
             if num:
                 board[y][x] = int(num[0])
+    cv2.imwrite('imgs/test.png', img)
 
-    if board != comare_compare:
-        print(board)
-        return board
-    else:
-        print('BAD')
-        return False
+    return board

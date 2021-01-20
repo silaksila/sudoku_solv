@@ -37,17 +37,20 @@ comare_compare = [
 def img_processing(path):
     img = cv2.imread(path, 0)
     # processing image
+    img = cv2.resize(img, (900, 900))
     img = cv2.adaptiveThreshold(
-        img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    edges = cv2.Canny(img, 5, 100)
+        img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 2)
+    edges = cv2.Canny(img, 100, 400)
 
     # find lines in sudoku
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 10,
-                            minLineLength=30, maxLineGap=10)
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 100,
+                            minLineLength=100, maxLineGap=30)
     # remove lines from sudoku
+    #example = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     for i in range(len(lines)):
         for x1, y1, x2, y2 in lines[i]:
-            cv2.line(img, (x1, y1), (x2, y2), (255, 255, 255), 4)
+            #cv2.line(example, (x1, y1), (x2, y2), (0, 255, 0), 12)
+            cv2.line(img, (x1, y1), (x2, y2), (255, 255, 255), 12)
 
     img = cv2.GaussianBlur(img, (9, 9), 0)
 
@@ -65,8 +68,11 @@ def img_processing(path):
             if num:
                 board[y][x] = int(num[0])
 
-    cv2.imwrite('test.png', img)
-    cv2.imshow('aa', img)
+    # img = img[0*(img_height//9):(1)*(img_height//9),
+     #         0*(img_weight//9):(1)*(img_weight//9)]
+
+    cv2.imwrite('imgs/test.png', img)
+    cv2.imshow('aa', edges)
     cv2.waitKey(0)
 
     if board != comare_compare:
